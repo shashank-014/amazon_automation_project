@@ -1,44 +1,44 @@
 import streamlit as st
 import pandas as pd
 import json
-import os
+import requests
 
-st.set_page_config(page_title="Amazon Automation Data Uploader")
+st.set_page_config(page_title="Amazon Automation Uploader")
 
-DATA_PATH = "amazon_combined_data.json"
-
-# 🔹 API MODE
-query_params = st.query_params
-
-if "api" in query_params:
-
-    if os.path.exists(DATA_PATH):
-        with open(DATA_PATH, "r") as f:
-            data = json.load(f)
-        st.json(data)
-    else:
-        st.json({"error": "No data uploaded yet."})
-
-    st.stop()
-
-
-# 🔹 NORMAL UI MODE
 st.title("Amazon Workflow Automation - Data Uploader")
 
-st.write("Upload the three required CSV files below to generate structured JSON.")
+st.write(
+    "Upload the required CSV files. The dataset will be pushed to the automation engine via webhook."
+)
 
+# 🔹 Replace with your actual n8n webhook production URL
+WEBHOOK_URL = "https://shankssks09.app.n8n.cloud/webhook-test/https://amazonautomationproject-bbbthp3rxsvb3aeqr5kbhv.streamlit.app/"
+
+# File Uploads
 listings_file = st.file_uploader("Upload competitor_listings.csv", type=["csv"])
 reviews_file = st.file_uploader("Upload reviews.csv", type=["csv"])
 ppc_file = st.file_uploader("Upload ppc_terms.csv", type=["csv"])
 
 if listings_file and reviews_file and ppc_file:
 
+    # Read CSVs
     listings_df = pd.read_csv(listings_file)
     reviews_df = pd.read_csv(reviews_file)
     ppc_df = pd.read_csv(ppc_file)
 
     st.success("Files uploaded successfully!")
 
+    # Preview data
+    with st.expander("Preview Competitor Listings"):
+        st.dataframe(listings_df)
+
+    with st.expander("Preview Reviews"):
+        st.dataframe(reviews_df)
+
+    with st.expander("Preview PPC Terms"):
+        st.dataframe(ppc_df)
+
+    # Combine into structured JSON
     combined_data = {
         "listings": listings_df.to_dict(orient="records"),
         "reviews": reviews_df.to_dict(orient="records"),
@@ -48,16 +48,26 @@ if listings_file and reviews_file and ppc_file:
         "estimated_efficiency_gain_percent": 83
     }
 
-    with open(DATA_PATH, "w") as f:
-        json.dump(combined_data, f, indent=4)
+    st.subheader("Ready to Send Data to Automation Engine")
 
-    st.success("JSON data saved successfully!")
+    if st.button("Send Data to Automation Engine"):
 
-    st.subheader("Preview")
-    st.json(combined_data)
+        if "PASTE_YOUR_N8N_WEBHOOK_URL_HERE" in WEBHOOK_URL:
+            st.error("Please update the WEBHOOK_URL in app.py with your actual n8n webhook URL.")
+        else:
+            try:
+                response = requests.post(WEBHOOK_URL, json=combined_data)
 
-    st.write("API endpoint available at:")
-    st.code(st.experimental_get_query_params())
+                if response.status_code == 200:
+                    st.success("Data successfully sent to automation engine!")
+                    st.subheader("Automation Engine Response:")
+                    st.json(response.json())
+                else:
+                    st.error(f"Error sending data: {response.status_code}")
+                    st.text(response.text)
+
+            except Exception as e:
+                st.error(f"Connection failed: {e}")
 
 else:
-    st.info("Please upload all three CSV files.")
+    st.info("Please upload all three CSV files to continue.")
