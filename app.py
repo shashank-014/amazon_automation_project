@@ -57,6 +57,10 @@ if listings_file and reviews_file and ppc_file:
                     st.text(response.text)
                     st.stop()
 
+                if not response.text.strip():
+                    st.error("Empty response from webhook")
+                    st.stop()
+
                 raw = response.json()
 
                 # ---------------------------
