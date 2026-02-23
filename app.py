@@ -1,20 +1,23 @@
 import streamlit as st
 import pandas as pd
-import json
 import requests
 
 st.set_page_config(page_title="Amazon Automation Engine", layout="wide")
 
-st.title("Amazon Automation Engine - AI Insight Dashboard")
+st.title("Amazon Automation Engine – Performance Insights")
 
 st.write(
-    "Upload the required Amazon datasets. The automation engine will analyze performance and generate strategic insights."
+    "Upload Amazon datasets. The automation engine will analyze PPC, reviews, and competitor data."
 )
 
-# 🔹 Replace with your actual PRODUCTION webhook URL
-WEBHOOK_URL = "https://shankssks09.app.n8n.cloud/webhook/amazon-upload"
+# 🔹 PUT YOUR PRODUCTION WEBHOOK URL HERE
+WEBHOOK_URL = "PASTE_YOUR_N8N_PRODUCTION_WEBHOOK_URL_HERE"
 
-# File Uploads
+
+# ---------------------------
+# File Upload Section
+# ---------------------------
+
 listings_file = st.file_uploader("Upload competitor_listings.csv", type=["csv"])
 reviews_file = st.file_uploader("Upload reviews.csv", type=["csv"])
 ppc_file = st.file_uploader("Upload ppc_terms.csv", type=["csv"])
@@ -28,13 +31,13 @@ if listings_file and reviews_file and ppc_file:
     st.success("Files uploaded successfully.")
 
     with st.expander("Preview Uploaded Data"):
-        st.write("Competitor Listings")
+        st.subheader("Competitor Listings")
         st.dataframe(listings_df)
 
-        st.write("Reviews")
+        st.subheader("Customer Reviews")
         st.dataframe(reviews_df)
 
-        st.write("PPC Terms")
+        st.subheader("PPC Terms")
         st.dataframe(ppc_df)
 
     combined_data = {
@@ -46,74 +49,91 @@ if listings_file and reviews_file and ppc_file:
         "estimated_efficiency_gain_percent": 83
     }
 
-    st.subheader("Send Data to Automation Engine")
+    st.subheader("Run Automation")
 
     if st.button("Run AI Analysis"):
 
         if "PASTE_YOUR_N8N_PRODUCTION_WEBHOOK_URL_HERE" in WEBHOOK_URL:
-            st.error("Please update the WEBHOOK_URL in app.py with your actual production webhook URL.")
+            st.error("Please update WEBHOOK_URL in app.py with your actual production webhook URL.")
         else:
             try:
-                response = requests.post(WEBHOOK_URL, json=combined_data)
+                response = requests.post(
+                    WEBHOOK_URL,
+                    json=combined_data,
+                    timeout=20
+                )
 
                 if response.status_code == 200:
 
-                    st.success("Automation engine completed analysis.")
+                    raw = response.json()
 
-                    result = response.json()[0]
+                    # n8n returns a list of items
+                    if isinstance(raw, list) and len(raw) > 0:
+                        result = raw[0]
+                    else:
+                        result = raw
+
+                    st.success("Automation engine completed analysis.")
 
                     st.header("📊 Automation Insights Report")
 
-                    # 🔹 Complaint Themes
+                    # ---------------------------
+                    # Complaints
+                    # ---------------------------
                     st.subheader("Top Complaint Themes")
-                    for complaint in result.get("complaints", []):
-                        st.markdown(f"- {complaint}")
+                    if result.get("complaints"):
+                        for complaint in result["complaints"]:
+                            st.markdown(f"- {complaint}")
+                    else:
+                        st.info("No complaint patterns detected.")
 
-                    # 🔹 PPC Waste Table
+                    # ---------------------------
+                    # PPC Waste
+                    # ---------------------------
                     st.subheader("High Spend – Low Conversion PPC Terms")
 
                     if result.get("ppc_waste"):
-                        ppc_df_result = pd.DataFrame(result["ppc_waste"])
-                        st.dataframe(ppc_df_result)
+                        ppc_result_df = pd.DataFrame(result["ppc_waste"])
+                        st.dataframe(ppc_result_df)
 
-                        if "spend" in ppc_df_result.columns and "conversion_rate" in ppc_df_result.columns:
-                            st.subheader("Spend vs Conversion Rate")
-                            st.scatter_chart(
-                                ppc_df_result.set_index("keyword")[["spend", "conversion_rate"]]
-                            )
-
-                        total_waste = sum(item.get("spend", 0) for item in result["ppc_waste"])
-                        projected_recovery = total_waste * 0.3
-
-                        st.subheader("Projected Optimization Impact")
-                        st.metric("Potential Recoverable Ad Spend (30%)", f"${projected_recovery:,.2f}")
-
+                        # Optional: Simple metric summary
+                        total_waste = sum(item["spend"] for item in result["ppc_waste"])
+                        st.metric("Total Inefficient Spend Identified", f"${total_waste:,.2f}")
                     else:
                         st.info("No major PPC inefficiencies detected.")
 
-                    # 🔹 Keyword Opportunities
+                    # ---------------------------
+                    # Keyword Opportunities
+                    # ---------------------------
                     st.subheader("Keyword Opportunity Gaps")
 
                     if result.get("keyword_opportunities"):
-                        kw_df = pd.DataFrame(result["keyword_opportunities"])
+                        kw_df = pd.DataFrame(result["keyword_opportunities"], columns=["Keyword"])
                         st.dataframe(kw_df)
                     else:
                         st.info("No significant keyword gaps detected.")
 
-                    # 🔹 Strategic Recommendations
+                    # ---------------------------
+                    # Recommendations
+                    # ---------------------------
                     st.subheader("Strategic Recommendations")
-                    for rec in result.get("recommendations", []):
-                        st.markdown(f"- {rec}")
+                    if result.get("recommendations"):
+                        for rec in result["recommendations"]:
+                            st.markdown(f"- {rec}")
+                    else:
+                        st.info("No recommendations generated.")
 
-                    # 🔹 Efficiency Summary
+                    # ---------------------------
+                    # Efficiency Summary
+                    # ---------------------------
                     st.subheader("Automation Efficiency Impact")
                     st.success(result.get("efficiency_summary", ""))
 
                 else:
-                    st.error(f"Error from automation engine: {response.status_code}")
+                    st.error(f"Engine returned status {response.status_code}")
                     st.text(response.text)
 
-            except Exception as e:
+            except requests.exceptions.RequestException as e:
                 st.error(f"Connection failed: {e}")
 
 else:
