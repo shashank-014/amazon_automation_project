@@ -138,6 +138,14 @@ if listings_file and reviews_file and ppc_file:
             else:
                 st.info("No major PPC inefficiencies detected.")
 
+            st.subheader("PPC Conversion Benchmark")
+
+            overall_cr = sum(ppc_df["conversions"]) / sum(ppc_df["clicks"])
+            st.metric("Overall Conversion Rate", f"{overall_cr*100:.2f}%")
+
+            benchmark = overall_cr * 1.15
+            st.metric("Optimized Target Conversion", f"{benchmark*100:.2f}%")
+
             # =========================================================
             # KEYWORD OPPORTUNITIES
             # =========================================================
