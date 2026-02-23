@@ -12,7 +12,7 @@ st.write(
 )
 
 # 🔹 Replace with your actual n8n webhook production URL
-WEBHOOK_URL = "https://shankssks09.app.n8n.cloud/webhook-test/https://amazonautomationproject-bbbthp3rxsvb3aeqr5kbhv.streamlit.app/"
+WEBHOOK_URL = "https://shankssks09.app.n8n.cloud/webhook-test/amazon-upload"
 
 # File Uploads
 listings_file = st.file_uploader("Upload competitor_listings.csv", type=["csv"])
