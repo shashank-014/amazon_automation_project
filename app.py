@@ -11,7 +11,7 @@ st.write(
 )
 
 # 🔹 PUT YOUR PRODUCTION WEBHOOK URL HERE
-WEBHOOK_URL = "PASTE_YOUR_N8N_PRODUCTION_WEBHOOK_URL_HERE"
+WEBHOOK_URL = "https://shankssks09.app.n8n.cloud/webhook/amazon-upload"
 
 
 # ---------------------------
