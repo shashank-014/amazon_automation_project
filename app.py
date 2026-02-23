@@ -79,7 +79,7 @@ if listings_file and reviews_file and ppc_file:
             col1.metric("Risk Level", result.get("risk_level", "N/A"))
             col2.metric(
                 "Growth Opportunity",
-                f"{result.get('growth_opportunity_percent', '0')}%"
+                f"{result.get('growth_opportunity_percent', '0')}"
             )
 
             urgent_actions = result.get("urgent_actions", [])
