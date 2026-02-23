@@ -60,7 +60,7 @@ if listings_file and reviews_file and ppc_file:
 
                     st.success("Automation engine completed analysis.")
 
-                    result = response.json()
+                    result = response.json()[0]
 
                     st.header("📊 Automation Insights Report")
 
