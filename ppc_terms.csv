@@ -1,7 +1,15 @@
 asin,search_term,clicks,conversions,spend
-A1,leak proof sports bottle,120,5,80
-A1,gym water bottle 1 liter,90,12,60
-A2,travel water bottle,150,3,100
-A2,metal gym bottle,70,10,40
-A3,insulated water bottle,200,25,120
-A3,cheap water bottle,300,2,150
+A1,cheap insulated bottle,500,3,400
+A1,leak proof sports bottle,300,45,250
+A2,low price metal flask,420,4,350
+A2,metal gym bottle,250,35,200
+A3,travel water bottle sale,380,6,280
+A3,insulated camping bottle,200,30,180
+A4,discount stainless bottle,450,5,320
+A4,travel steel bottle,220,28,170
+A5,leak proof gym bottle,260,40,210
+A6,ultra insulated bottle,300,50,240
+A7,premium insulated flask,190,32,150
+A8,cheap water bottle offer,520,2,390
+A9,cold water flask,280,48,220
+A10,camping metal bottle,230,36,190

@@ -1,7 +1,21 @@
 asin,review_text,rating
-A1,"Bottle leaks from lid after 2 weeks",2
-A1,"Keeps water cold but scratches easily",3
-A2,"Strap broke after one month",2
-A2,"Very good for gym use",5
-A3,"Excellent insulation but lid not tight",3
-A3,"Durable and stylish",5
+A1,Bottle leaks badly after two days,2
+A1,Lid not tight and water spills in bag,2
+A1,Scratches very easily on surface,3
+A1,Insulation good but lid leaks,3
+A2,Strap broke within one week,2
+A2,Leak issue from cap area,2
+A2,Durable body but lid loose,3
+A3,Water spills during travel,2
+A3,Excellent insulation but scratches quickly,3
+A3,Lid seal poor quality,2
+A4,Cap not tight and leaking problem,2
+A4,Paint peeling after few days,2
+A5,Leak proof claim false,1
+A5,Water leaks in backpack,2
+A6,Scratches and dents very fast,3
+A6,Insulation amazing but lid weak,3
+A7,Very durable and excellent insulation,5
+A8,Good bottle but strap weak,3
+A9,Best insulation but minor lid issue,4
+A10,Perfect for camping,5
